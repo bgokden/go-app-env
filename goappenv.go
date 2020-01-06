@@ -21,6 +21,8 @@ type GoAppEnv interface {
 }
 
 type GoApp interface {
+	GetName() string
+	GetDependencies() []string
 	RunWithEnv(GoAppEnv) error
 }
 

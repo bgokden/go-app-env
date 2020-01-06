@@ -7,7 +7,20 @@ import (
 	goappenv "github.com/bgokden/go-app-env"
 )
 
-func RunWithEnv(goappenv goappenv.GoAppEnv) error {
+type ExampleGoApp struct{}
+
+// GetName is used for service registery
+func (e *ExampleGoApp) GetName() string {
+	return "example-go-app"
+}
+
+// GetDependencies will be used for initializing other services
+func (e *ExampleGoApp) GetDependencies() []string {
+	return []string{}
+}
+
+// RunWithEnv is the main loop that will be initialized.
+func (e *ExampleGoApp) RunWithEnv(goappenv goappenv.GoAppEnv) error {
 	logger := goappenv.GetLogger()
 	logger.Printf("I am running in env %v\n", goappenv.GetName())
 	mux := goappenv.GetServeMux()
@@ -22,7 +35,8 @@ func Serve(w http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
-	err := RunWithEnv(goappenv.Base())
+	exampleGoApp := &ExampleGoApp{}
+	err := exampleGoApp.RunWithEnv(goappenv.Base())
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 	}
