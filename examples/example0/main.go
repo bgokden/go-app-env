@@ -14,6 +14,11 @@ func (e *ExampleGoApp) GetName() string {
 	return "example-go-app"
 }
 
+// GetTag will be used for versioning
+func (e *ExampleGoApp) GetTag() string {
+	return "v0.1.0"
+}
+
 // GetDependencies will be used for initializing other services
 func (e *ExampleGoApp) GetDependencies() []string {
 	return []string{}
@@ -23,7 +28,7 @@ func (e *ExampleGoApp) GetDependencies() []string {
 func (e *ExampleGoApp) RunWithEnv(goappenv goappenv.GoAppEnv) error {
 	logger := goappenv.GetLogger()
 	logger.Printf("I am running in env %v\n", goappenv.GetName())
-	mux := goappenv.GetServeMux()
+	mux := goappenv.GetHttpServer()
 	mux.HandleFunc("/example0", Serve)
 	return nil
 }

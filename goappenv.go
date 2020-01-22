@@ -8,12 +8,14 @@ import (
 
 	"github.com/bgokden/go-app-env/cache"
 	"github.com/bgokden/go-app-env/kv"
+	"google.golang.org/grpc"
 )
 
 type GoAppEnv interface {
 	GetName() string
 	GetEnvironmentVariable(string) string
-	GetServeMux() *http.ServeMux
+	GetHttpServer() *http.ServeMux
+	GetGrpcServer() *grpc.Server
 	GetCache() cache.Cache
 	GetDB() *sql.DB
 	GetKV() kv.KV
@@ -22,6 +24,7 @@ type GoAppEnv interface {
 
 type GoApp interface {
 	GetName() string
+	GetTag() string
 	GetDependencies() []string
 	RunWithEnv(GoAppEnv) error
 }
@@ -29,7 +32,7 @@ type GoApp interface {
 func Base() GoAppEnv {
 	e := new(BaseGoAppEnv)
 	go func() {
-		err := http.ListenAndServe(":8080", e.GetServeMux())
+		err := http.ListenAndServe(":8080", e.GetHttpServer())
 		log.Fatal(err)
 	}()
 	e.Logger = log.New(os.Stdout, "GoAppEnv: ", log.Lshortfile)
@@ -48,7 +51,7 @@ func (e *BaseGoAppEnv) GetEnvironmentVariable(key string) string {
 	return os.Getenv(key)
 }
 
-func (e *BaseGoAppEnv) GetServeMux() *http.ServeMux {
+func (e *BaseGoAppEnv) GetHttpServer() *http.ServeMux {
 	return http.DefaultServeMux
 }
 
@@ -66,6 +69,10 @@ func (e *BaseGoAppEnv) GetKV() kv.KV {
 
 func (e *BaseGoAppEnv) GetLogger() *log.Logger {
 	return e.Logger
+}
+
+func (e *BaseGoAppEnv) GetGrpcServer() *grpc.Server {
+	return nil
 }
 
 /*
